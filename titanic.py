@@ -12,6 +12,8 @@ from sklearn.metrics import accuracy_score
 from sklearn.metrics import recall_score
 
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.neural_network import MLPClassifier
+from xgboost import XGBClassifier
 
 
 ########### READ DATA ##############
@@ -90,6 +92,32 @@ acc_score = round(accuracy_score(y_true, y_pred), 2)
 
 print("\n\n")
 print("DECISION TREE")
+print("--------------")
+print("Best Params:\t" + best)
+print("Avg Precision:\t"+ str(avg_prec))
+print("Avg Recall:\t"+ str(avg_recall))
+print("Avg F1_Score:\t"+ str(avg_f1))
+print("Accuracy Score:\t"+ str(acc_score))
+print("\n\n")
+
+
+
+############# NEURAL NETWORK PARAMETER TUNING ###############
+
+tuned_parameters_dt = [{'solver': ['lbfgs'], 'alpha': [.0005, .0001, .005, .001, .01],
+                     'max_iter': [500, 1000], 'activation': ['identity', 'logistic', 'tanh', 'relu']}
+                    ]
+clf = GridSearchCV(MLPClassifier(), tuned_parameters_dt, scoring='accuracy', cv=5)
+clf.fit(X_train, y_train)
+best = json.dumps(clf.best_params_)
+
+y_true, y_pred = y_test, clf.predict(X_test)
+avg_prec = round(precision_score(y_true, y_pred, average='macro'), 2)
+avg_recall = round(recall_score(y_true, y_pred, average='macro'), 2)
+avg_f1 = round(f1_score(y_true, y_pred, average='macro'), 2)
+acc_score = round(accuracy_score(y_true, y_pred), 2)
+
+print("NEURAL NETWORK")
 print("--------------")
 print("Best Params:\t" + best)
 print("Avg Precision:\t"+ str(avg_prec))
