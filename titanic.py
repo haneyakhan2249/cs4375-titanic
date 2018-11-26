@@ -19,7 +19,7 @@ from sklearn.tree import DecisionTreeClassifier
 # data = sys.argv[1]
 train_data = "./titanic_data/train.csv"
 train_df = pd.read_csv(train_data, header=0)
-print(train_df)
+# print(train_df)
 
 # data = sys.argv[1]
 test_data = "./titanic_data/test.csv"
@@ -46,7 +46,7 @@ le = preprocessing.LabelEncoder()
 le.fit(train_df['Embarked'].fillna('0'))
 train_df['Embarked'] = le.transform(train_df['Embarked'].fillna('0'))
 
-print(train_df)
+# print(train_df)
 
 
 ######### COLLECT STATS ON DATA ############## 
@@ -75,8 +75,8 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1)
 
 ############# DECISION TREE PARAMETER TUNING ###############
 
-tuned_parameters_dt = [{'max_depth': [1, 3], 'min_samples_split': [2, 5],
-                     'max_features': [2, 5], 'max_leaf_nodes': [2, 5]}
+tuned_parameters_dt = [{'max_depth': [1, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40], 'min_samples_split': [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+                     'max_features': [2, 9]}
                     ]
 clf = GridSearchCV(DecisionTreeClassifier(), tuned_parameters_dt, scoring='accuracy', cv=5)
 clf.fit(X_train, y_train)
