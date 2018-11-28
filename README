@@ -1,5 +1,5 @@
 CS4375 Machine Learning Project
-Titanic: Machine Learning From Disaster
+Titanic: Predicting Survival
 
 ----------------------------------------------------
 
@@ -11,5 +11,13 @@ Archita Racherla
 
 ----------------------------------------------------
 
+Analytics done using scikit-learn (Python).
+
+methods:
+- decision tree (DecisionTreeClassifier)
+- neural networks (MLPClassifier)
+- XGBoost (XGBoost)
+
 how to run:
+
 

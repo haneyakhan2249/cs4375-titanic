@@ -1,3 +1,5 @@
+# ************* FRAMEWORK / USELESS STUFF **********************
+
 from os import sys
 import pandas as pd
 import json
@@ -10,6 +12,10 @@ from sklearn.metrics import f1_score
 from sklearn.metrics import precision_score
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import recall_score
+
+from sklearn.metrics import roc_curve, auc
+import matplotlib.pyplot as plt
+import random
 
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neural_network import MLPClassifier
@@ -116,6 +122,20 @@ avg_prec = round(precision_score(y_true, y_pred, average='macro'), 2)
 avg_recall = round(recall_score(y_true, y_pred, average='macro'), 2)
 avg_f1 = round(f1_score(y_true, y_pred, average='macro'), 2)
 acc_score = round(accuracy_score(y_true, y_pred), 2)
+
+false_positive_rate, true_positive_rate, thresholds = roc_curve(y_true, y_pred)
+roc_auc = auc(false_positive_rate, true_positive_rate)
+
+plt.title('Receiver Operating Characteristic')
+plt.plot(false_positive_rate, true_positive_rate, 'b',
+label='AUC = %0.2f'% roc_auc)
+plt.legend(loc='lower right')
+plt.plot([0,1],[0,1],'r--')
+plt.xlim([-0.1,1.2])
+plt.ylim([-0.1,1.2])
+plt.ylabel('True Positive Rate')
+plt.xlabel('False Positive Rate')
+plt.show()
 
 print("NEURAL NETWORK")
 print("--------------")
