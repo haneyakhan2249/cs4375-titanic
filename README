@@ -17,7 +17,7 @@ Analytics done using scikit-learn (Python).
 Methods:
 - decision tree (DecisionTreeClassifier)
 - neural networks (MLPClassifier)
-- XGBoost (XGBoost)
+- gradient boosting (XGBoost)
 
 
 Implementation:
