@@ -19,6 +19,7 @@ import random
 from sklearn.tree import DecisionTreeClassifier
 
 
+
 ########### READ DATA ##############
 
 # data = sys.argv[1]
@@ -30,54 +31,64 @@ df = pd.read_csv(data, header=0)
 
 ########### CLEAN DATA ##############
 
-# df = df.dropna()
-
-# remove name
-df.drop(['Name'], axis=1)
+# parse name
+# extract last name and title
+parse = df['Name'].str.split(',')
+df['LastName'] = parse.str[0]
+le = preprocessing.LabelEncoder()
+le.fit(df['LastName'])
+df['LastName'] = le.transform(df['LastName'])
+df['Title'] = parse.str[1].str.split('.').str[0]
+le = preprocessing.LabelEncoder()
+le.fit(df['Title'])
+df['Title'] = le.transform(df['Title'])
 
 # convert sex to number
 le = preprocessing.LabelEncoder()
 le.fit(df['Sex'])
 df['Sex'] = le.transform(df['Sex'])
 
+# group age into child, adult, senior
 # fill age missing values
-df['Age'] = df['Age'].fillna('0')
+df['Age'] = df['Age'].fillna(df['Age'].median())
+# group by age
+df['AgeGroup'] = df['Age'].apply(lambda x: 0 if x<=18 else (1 if x<=54 else 2))
 
-# convert ticket to number
-le = preprocessing.LabelEncoder()
-le.fit(df['Ticket'])
-df['Ticket'] = le.transform(df['Ticket'])
+# ticket is useless
 
-# remove cabin for now
-## don't include it below
+# cabin is useless
 
+# det. total family size
+# combine parch and sibsp
+df['FamSize'] = df['Parch'] + df['SibSp']
+
+# fill emabrked missing values
 # convert embarked to number
+df['Embarked'] = df['Embarked'].fillna('S')
 le = preprocessing.LabelEncoder()
-le.fit(df['Embarked'].fillna('0'))
-df['Embarked'] = le.transform(df['Embarked'].fillna('0'))
-# le.fit(df['Embarked'])
-# df['Embarked'] = le.transform(df['Embarked'])
+le.fit(df['Embarked'])
+df['Embarked'] = le.transform(df['Embarked'])
 
 
 ########### SPLIT DATA ##############
 
-X = df[['PassengerId','Pclass','Sex','Age','SibSp','Parch','Ticket','Fare','Embarked']].values
+X = df[['Pclass', 'LastName', 'Title', 'Sex','AgeGroup','FamSize','Fare','Embarked']].values
 y = df['Survived'].values
 
-X_train, X_test, y_train, y_test = train_test_split(X, y)
-
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.1)
 
 
 
 ############# PARAMETER TUNING & TRAIN MODEL ###############
 
-tuned_parameters_dt = [{'max_depth': [1, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40], 'min_samples_split': [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
-                     'max_features': [2, 9]}
-                    ]
-clf = GridSearchCV(DecisionTreeClassifier(), tuned_parameters_dt, scoring='accuracy', cv=5)
-clf.fit(X_train, y_train)
-best = json.dumps(clf.best_params_)
+tuned_parameters_dt = [{'criterion': ['gini', 'entropy'], 'splitter': ['best', 'random'], 
+                        'min_samples_split': [2,3,4,5,6,7,8], 'max_features': [1, 2, 3, 4, 5, 6, 7, 8]}]
+# clf = GridSearchCV(DecisionTreeClassifier(), tuned_parameters_dt, scoring='accuracy', cv=5)
+# clf.fit(X_train, y_train)
+# best = json.dumps(clf.best_params_)
 
+clf = DecisionTreeClassifier(criterion='gini', splitter='random', min_samples_split=8, max_features=8)
+clf.fit(X_train, y_train)
 
 
 ############# PERFORMANCE EVALUATION ###############
@@ -88,26 +99,22 @@ avg_recall = round(recall_score(y_true, y_pred, average='macro'), 2)
 avg_f1 = round(f1_score(y_true, y_pred, average='macro'), 2)
 acc_score = round(accuracy_score(y_true, y_pred), 2)
 
+false_positive_rate, true_positive_rate, thresholds = roc_curve(y_true, y_pred)
+roc_auc = auc(false_positive_rate, true_positive_rate)
+
 print("\n\n")
-print("NEURAL NETWORK")
+print("DECISION TREE")
 print("--------------")
-print("Best Params:\t" + best)
-print("Avg Precision:\t"+ str(avg_prec))
-print("Avg Recall:\t"+ str(avg_recall))
+# print("Best Params:\t" + best)
 print("Avg F1_Score:\t"+ str(avg_f1))
 print("Accuracy Score:\t"+ str(acc_score))
 print("\n\n")
 
-false_positive_rate, true_positive_rate, thresholds = roc_curve(y_true, y_pred)
-roc_auc = auc(false_positive_rate, true_positive_rate)
-
-plt.title('Receiver Operating Characteristic')
-plt.plot(false_positive_rate, true_positive_rate, 'b',
-label='AUC = %0.2f'% roc_auc)
+plt.title('Decision Tree')
+plt.plot(false_positive_rate, true_positive_rate,
+label='AUC = %0.3f'% roc_auc)
 plt.legend(loc='lower right')
-plt.plot([0,1],[0,1],'r--')
-plt.xlim([-0.1,1.2])
-plt.ylim([-0.1,1.2])
-plt.ylabel('True Positive Rate')
-plt.xlabel('False Positive Rate')
+plt.plot([0,1],[0,1])
+plt.ylabel('TPR')
+plt.xlabel('FPR')
 plt.show()
