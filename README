@@ -21,12 +21,12 @@ Methods:
 
 
 Implementation:
-- Each method is impemented in two files: Python file and Jupyter Notebook. The code itself is the same, but just 
-    provides two different means of running the code. (We did this because we display an ROC curve and 
-    sometimes it doesn't display properly when running the python file)
+Each method is impemented in two files: Python file and Jupyter Notebook. The code itself is the same, 
+but just provides two different means of running the code. (We did this because we display an ROC curve and 
+sometimes it doesn't display properly when running the python file).
 
 
-How To Run:
+HOW TO RUN:
 
 - prerequistites:
     - scikit-learn
