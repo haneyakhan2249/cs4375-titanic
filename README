@@ -13,11 +13,30 @@ Archita Racherla
 
 Analytics done using scikit-learn (Python).
 
-methods:
+
+Methods:
 - decision tree (DecisionTreeClassifier)
 - neural networks (MLPClassifier)
 - XGBoost (XGBoost)
 
-how to run:
+
+Implementation:
+- Each method is impemented in two files: Python file and Jupyter Notebook. The code itself is the same, but just 
+    provides two different means of running the code. (We did this because we display an ROC curve and 
+    sometimes it doesn't display properly when running the python file)
 
 
+How To Run:
+
+- prerequistites:
+    - scikit-learn
+    - XGBoost
+    - Jupyter Notebooks if running notebooks
+
+- to run python files
+    - decision tree: `python dec_tree.py`
+    - neural network: `python neural_net.py`
+    - gradient boosting: `python xg_boost.py`
+
+- to run jupyter notebooks
+    - for all three, simply open and use the 'Run' button
